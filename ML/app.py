@@ -1,4 +1,29 @@
+"""
+FastAPI for Cattle & Buffalo Breed Recognition- (PyTorch version)
 
+Serves the EfficientNetV2-S model trained in project.ipynb.
+
+IMPORTANT: PyTorch's .pt state_dict has no architecture info baked in -- this file
+rebuilds the EXACT SAME model architecture as the notebook before loading the
+weights. If you change the architecture in the notebook, update build_model() here
+to match, or loading will fail (or silently produce garbage predictions).
+
+Expects these files (produced by the notebook) in the same directory as this script,
+or pass custom paths via environment variables:
+    - cattle_breed_efficientnetv2s.pt   (MODEL_PATH)
+    - class_names.json                  (CLASS_NAMES_PATH)
+
+Run:
+    pip install -r requirements.txt
+    python app.py
+    (equivalently: uvicorn app:app --host 0.0.0.0 --port 5000)
+
+Then test:
+    curl -X POST -F "file=@sample.jpg" http://localhost:5000/predict
+
+Interactive API docs (FastAPI gives you this for free):
+    http://localhost:5000/docs
+"""
 
 import os
 import io
