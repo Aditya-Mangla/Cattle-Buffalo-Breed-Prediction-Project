@@ -4,3 +4,6 @@ ML/dataset_split/
 ML/dataset/
 ML/__pycache__
 ML/predict_test.html
+.env
+node_modules
+backend

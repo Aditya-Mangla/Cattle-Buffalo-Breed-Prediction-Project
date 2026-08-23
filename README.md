@@ -104,6 +104,87 @@ curl -X POST -F "file=@sample.jpg" http://localhost:5000/predict
 Trained on breed images sourced from public datasets including [ICAR-NBAGR](https://www.nbagr.res.in/)-aligned collections and Kaggle/Roboflow cattle-breed datasets. Dataset not included in this repository due to size — see notebook comments for suggested sources.
 
 ##  Team
+frontend engineers :- Anuj, Nancy
+backend engineers :- Sumit, Nikunj
+ML engineers :- Anuj Rawat, Aditya Mangla
 
 
+# Cattle Breed Recognition — Backend
 
+Node.js/Express + MongoDB backend for an image-based cattle breed recognition site.
+
+## Architecture
+
+```
+Client (web/app)
+      │  multipart/form-data (image)
+      ▼
+Express API  ──►  MongoDB (users, breeds catalogue, prediction history)
+      │
+      │  POST image
+      ▼
+ML model-serving endpoint (separate service, see below)
+```
+
+**Important:** this backend handles auth, image upload, storage, breed
+metadata, and prediction history — but it does **not** train or run the
+image-recognition model itself. Node isn't a natural fit for that; CNN
+training/inference is normally done in Python (TensorFlow/Keras or PyTorch).
+
+The recommended setup is:
+1. Train an image classifier (e.g. fine-tune ResNet50/EfficientNet/MobileNet
+   on labeled cattle breed photos).
+2. Serve it behind a small HTTP endpoint (FastAPI or Flask) that accepts an
+   image and returns JSON predictions.
+3. Point this backend at that endpoint via `ML_SERVICE_URL` in `.env`.
+
+`services/mlService.js` documents the exact request/response contract it
+expects. Until you have that service running, in `NODE_ENV=development` it
+automatically falls back to mock predictions so you can build and test the
+rest of the app (routes, DB, frontend) independently.
+
+## Setup
+
+```bash
+npm install
+cp .env.example .env   # then edit values, especially MONGO_URI and JWT_SECRET
+npm run dev             # nodemon, or `npm start` for plain node
+```
+
+Requires a running MongoDB instance (local or Atlas) at the URI you set.
+
+## API Overview
+
+| Method | Route                     | Auth        | Description                          |
+|--------|---------------------------|-------------|---------------------------------------|
+| POST   | /api/auth/register        | —           | Create account                        |
+| POST   | /api/auth/login           | —           | Log in, get JWT                       |
+| GET    | /api/auth/me              | required    | Current user profile                  |
+| GET    | /api/breeds               | —           | List/search breed catalogue           |
+| GET    | /api/breeds/:idOrLabel    | —           | Single breed by id or labelKey        |
+| POST   | /api/breeds               | admin       | Add breed metadata                    |
+| PUT    | /api/breeds/:id           | admin       | Update breed metadata                 |
+| DELETE | /api/breeds/:id           | admin       | Remove breed                          |
+| POST   | /api/predictions          | optional    | Upload image, get breed prediction    |
+| GET    | /api/predictions/history  | required    | Logged-in user's past predictions     |
+| GET    | /api/predictions/:id      | required    | Single prediction record              |
+
+`POST /api/predictions` expects `multipart/form-data` with the file under
+field name `image`. Example with curl:
+
+```bash
+curl -X POST http://localhost:5000/api/predictions \
+  -F "image=@/path/to/cow.jpg"
+```
+
+## Notes / next steps
+
+- Uploaded images are stored on local disk under `/uploads` and served
+  statically. For production, swap this for S3/Cloud Storage and store the
+  resulting URL instead (upload middleware and static serving would change
+  accordingly).
+- Add rate limiting (e.g. `express-rate-limit`) on `/api/predictions` before
+  going public, since it triggers a call to your ML service on every request.
+- Seed the `Breed` collection with your actual breed catalogue — `labelKey`
+  must exactly match the class labels your trained model outputs so
+  predictions can be enriched with metadata automatically.
