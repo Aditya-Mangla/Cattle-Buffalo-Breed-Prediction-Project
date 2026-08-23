@@ -1,12 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   createPrediction,
   getMyPredictions,
   getPredictionById,
-} = require('../../controllers/predictionController');
-const { protect, optionalAuth } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+} from '../controllers/predictionController.js';
+import { protect, optionalAuth } from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
+
+const router = express.Router();
 
 // Anyone can submit an image; if logged in, it's tied to their account
 router.post('/', optionalAuth, upload.single('image'), createPrediction);
@@ -14,4 +15,4 @@ router.post('/', optionalAuth, upload.single('image'), createPrediction);
 router.get('/history', protect, getMyPredictions);
 router.get('/:id', protect, getPredictionById);
 
-module.exports = router;
+export default router;

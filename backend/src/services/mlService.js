@@ -1,6 +1,6 @@
-const axios = require('axios');
-const fs = require('fs');
-const FormData = require('form-data');
+import axios from 'axios';
+import fs from 'fs';
+import FormData from 'form-data';
 
 /**
  * This Node backend does not itself run the cattle-breed image-recognition
@@ -84,4 +84,4 @@ const getMockPredictions = () => {
   ];
 };
 
-module.exports = { classifyImage };
+export { classifyImage };
