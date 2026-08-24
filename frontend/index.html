@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cattle &amp; Buffalo Breed Recognition of India</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth" id="authScreen">
+  <div class="auth__panel">
+    <div class="auth__art">
+      <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?q=80&w=1200&auto=format&fit=crop" alt="Indian cattle and buffalo in a field">
+      <div class="auth__art-copy">
+        <div class="brand brand--onart">
+          <div class="brand__mark">🐄</div>
+          <div class="brand__text">
+            <h1>Cattle &amp; Buffalo<br>Breed Recognition</h1>
+            <span>OF INDIA</span>
+          </div>
+        </div>
+        <h2>Identify any Indian cattle or buffalo breed in seconds</h2>
+        <p>Upload a photo and let our AI model match it against India's indigenous cattle &amp; buffalo breeds — built for farmers, researchers and animal enthusiasts.</p>
+      </div>
+    </div>
+
+    <div class="auth__form-side">
+      <div class="auth__tabs" role="tablist">
+        <button class="auth__tab is-active" id="tabLogin" role="tab" aria-selected="true">Log In</button>
+        <button class="auth__tab" id="tabRegister" role="tab" aria-selected="false">Register</button>
+      </div>
+
+      <!-- Login form -->
+      <form class="auth__form" id="loginForm">
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password" minlength="6">
+        </label>
+        <p class="field-error" id="loginError"></p>
+        <button type="submit" class="btn btn--primary btn--block">Log In</button>
+        <button type="button" class="btn btn--ghost btn--block" id="guestBtn">Continue as Guest</button>
+      </form>
+
+      <!-- Register form -->
+      <form class="auth__form hidden" id="registerForm">
+        <label class="field">
+          <span>Full name</span>
+          <input type="text" name="name" placeholder="Your name" required autocomplete="name">
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" name="password" placeholder="At least 6 characters" required autocomplete="new-password" minlength="6">
+        </label>
+        <p class="field-error" id="registerError"></p>
+        <button type="submit" class="btn btn--primary btn--block">Create Account</button>
+      </form>
+
+      <p class="auth__switch">
+        <span id="switchToRegisterText">New here? <a href="#" id="switchToRegister">Create an account</a></span>
+        <span id="switchToLoginText" class="hidden">Already have an account? <a href="#" id="switchToLogin">Log in</a></span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD CONTAINER -->
+<div class="app hidden" id="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand__mark">🐄</div>
+      <div class="brand__text">
+        <h1>Cattle &amp; Buffalo<br>Breed Recognition</h1>
+        <span>OF INDIA</span>
+      </div>
+    </div>
+
+    <nav class="nav" id="sidebarNav">
+      <a href="#" class="nav__item is-active" data-view="home"><i data-icon="home"></i>Home</a>
+      <a href="#" class="nav__item" data-view="history"><i data-icon="history"></i>History</a>
+      <a href="#" class="nav__item" data-view="breeds"><i data-icon="grid"></i>All Breeds</a>
+      <a href="#" class="nav__item" data-view="about"><i data-icon="info"></i>About</a>
+      <a href="#" class="nav__item" data-view="settings"><i data-icon="settings"></i>Settings</a>
+      <a href="#" class="nav__item" data-view="help"><i data-icon="help"></i>Help &amp; Support</a>
+    </nav>
+
+    <div class="sidebar__user" id="sidebarUser">
+      <div class="sidebar__user-avatar" id="sidebarUserAvatar">G</div>
+      <div class="sidebar__user-meta">
+        <strong id="sidebarUserName">Guest</strong>
+        <button class="sidebar__logout" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+
+    <div class="sidebar__promo">
+      <div class="promo__badge">AI Powered</div>
+      <p>Identify Indian Cattle &amp; Buffalo Breeds Instantly</p>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEW CONTAINER -->
+  <main class="main">
+
+    <!-- PAGE VIEW: HOME -->
+    <div id="viewHome" class="view-panel">
+      <section class="hero">
+        <div class="hero__copy">
+          <h2>Identify Indian Cattle &amp; Buffalo Breeds using <span>Artificial Intelligence</span></h2>
+          <p>Upload an image to get accurate breed information instantly.</p>
+          <div class="hero__actions">
+            <button class="btn btn--primary" id="heroUploadBtn">Upload Image</button>
+            <button class="btn btn--ghost" id="learnMoreBtn">Learn More</button>
+          </div>
+        </div>
+        <div class="hero__art">
+          <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?q=80&w=1200&auto=format&fit=crop" alt="Indian cattle and buffalo in a field">
+        </div>
+      </section>
+
+      <section class="steps" id="stepsSection">
+        <h3 class="section-title">How it works?</h3>
+        <div class="steps__row">
+          <div class="step">
+            <div class="step__icon">⬆</div>
+            <div class="step__body"><span class="step__num">1</span><h4>Upload Image</h4><p>Upload cattle/buffalo image</p></div>
+          </div>
+          <div class="step__arrow">›</div>
+          <div class="step">
+            <div class="step__icon">🧠</div>
+            <div class="step__body"><span class="step__num">2</span><h4>AI Analysis</h4><p>AI model analyzes physical features</p></div>
+          </div>
+          <div class="step__arrow">›</div>
+          <div class="step">
+            <div class="step__icon">✓</div>
+            <div class="step__body"><span class="step__num">3</span><h4>Breed Matched</h4><p>Matching breed identified</p></div>
+          </div>
+          <div class="step__arrow">›</div>
+          <div class="step">
+            <div class="step__icon">ⓘ</div>
+            <div class="step__body"><span class="step__num">4</span><h4>View Details</h4><p>Access full breed metrics</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-3">
+        <!-- Recent History Card -->
+        <div class="card history-card">
+          <div class="card__head">
+            <h3 class="section-title">Recent History</h3>
+            <a href="#" class="link-sm" id="viewAllHistory">View All</a>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- Result Card -->
+        <div class="card result-card">
+          <div class="card__head">
+            <h3 class="section-title">Result</h3>
+            <button class="link-sm icon-link" id="shareResultBtn">Share</button>
+          </div>
+          <div class="result-body" id="resultBody">
+            <div class="result-empty" id="resultEmpty">
+              <div class="dropzone" id="dropzone">
+                <svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 4v11m0-11 4.5 4.5M12 4 7.5 8.5M4 17v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p><strong>Drag &amp; drop</strong> an image, or click to browse</p>
+                <span>JPG, PNG · Max 5MB</span>
+                <input type="file" id="fileInput" accept="image/png, image/jpeg" hidden>
+              </div>
+            </div>
+
+            <div class="result-loading hidden" id="resultLoading">
+              <div class="spinner"></div>
+              <p>Analyzing image with AI model…</p>
+            </div>
+
+            <div class="result-filled hidden" id="resultFilled">
+              <div class="result-filled__left">
+                <div class="result-photo">
+                  <span class="match-badge" id="matchBadge">Match Found</span>
+                  <img id="resultImg" src="" alt="Uploaded animal">
+                </div>
+                <h4 id="resultBreedName">—</h4>
+                <p class="latin" id="resultLatin"></p>
+                <div class="confidence">
+                  <span>Confidence Score</span>
+                  <strong id="resultConfidence">—</strong>
+                </div>
+                <div class="result-cta">
+                  <button class="btn btn--primary btn--block" id="viewFullInfoBtn">View Full Information</button>
+                  <button class="btn btn--ghost btn--block" id="viewSimilarBtn">View Similar Breeds</button>
+                </div>
+              </div>
+              <div class="result-filled__right">
+                <h5>Breed Details</h5>
+                <table class="detail-table" id="detailTable"></table>
+              </div>
+            </div>
+
+            <div class="result-error hidden" id="resultError">
+              <p id="resultErrorMsg">Couldn't reach the breed recognition service.</p>
+              <button class="btn btn--ghost" id="retryBtn">Try Again</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Characteristics Card -->
+        <div class="card characteristics-card">
+          <h3 class="section-title">Characteristics</h3>
+          <ul class="trait-list" id="traitList">
+            <li class="muted">Upload an image to see breed characteristics.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="grid-2 bottom-panels">
+        <div class="card">
+          <h3 class="section-title">Characteristics Details</h3>
+          <ul class="trait-list" id="traitListBottom"><li class="muted">No breed selected yet.</li></ul>
+        </div>
+        <div class="card">
+          <h3 class="section-title">Best Suited For</h3>
+          <ul class="suited-list" id="suitedList"><li class="muted">No breed selected yet.</li></ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- PAGE VIEW: HISTORY -->
+    <div id="viewHistory" class="view-panel hidden">
+      <div class="card">
+        <h3 class="section-title">Complete Scan History</h3>
+        <p>Review past breed identification results stored in your account history.</p>
+        <div id="fullHistoryList" class="history-list">
+          <p class="muted">Loading history from server...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE VIEW: ALL BREEDS -->
+    <div id="viewBreeds" class="view-panel hidden">
+      <div class="card breeds-card">
+        <h3 class="section-title">All Registered Indigenous Breeds</h3>
+        <div class="search-box">
+          <input type="text" id="breedSearch" placeholder="Search breed…">
+        </div>
+        <div class="filter-pills" id="filterPills">
+          <button class="pill is-active" data-filter="All">All</button>
+          <button class="pill" data-filter="Cattle">Cattle</button>
+          <button class="pill" data-filter="Buffalo">Buffalo</button>
+          <button class="pill" data-filter="Indigenous">Indigenous</button>
+        </div>
+        <div class="breeds-grid" id="breedsGrid"></div>
+      </div>
+    </div>
+
+    <!-- PAGE VIEW: ABOUT -->
+    <div id="viewAbout" class="view-panel hidden">
+      <section class="about">
+        <div class="about__text">
+          <h3 class="section-title">About This App</h3>
+          <p>This app uses Artificial Intelligence to recognize Indian Cattle &amp; Buffalo breeds from images. It helps farmers and enthusiasts identify breeds and learn more about them.</p>
+        </div>
+        <div class="about__facts">
+          <div class="fact"><span class="fact__icon">🧑‍🌾</span><div><strong>Developed For</strong><p>Farmers, Researchers &amp; Animal Enthusiasts</p></div></div>
+          <div class="fact"><span class="fact__icon">🗂️</span><div><strong>Data Source</strong><p>Indian Council of Agricultural Research (ICAR)</p></div></div>
+          <div class="fact"><span class="fact__icon">⚙️</span><div><strong>AI Model</strong><p>Trained on Indian Cattle &amp; Buffalo Dataset</p></div></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PAGE VIEW: SETTINGS -->
+    <!-- PAGE VIEW: SETTINGS -->
+<div id="viewSettings" class="view-panel hidden">
+  <div class="card">
+    <h3 class="section-title">Settings</h3>
+    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0;">
+      <div>
+        <strong>Dark Mode</strong>
+        <p style="margin: 0; font-size: 0.875rem; color: #666;">Toggle dark theme display</p>
+      </div>
+      <label class="switch" style="position: relative; display: inline-block; width: 48px; height: 24px;">
+        <input type="checkbox" id="darkModeToggle" style="opacity: 0; width: 0; height: 0;">
+        <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+      </label>
+    </div>
+  </div>
+</div>
+
+    <!-- PAGE VIEW: HELP & SUPPORT -->
+    <div id="viewHelp" class="view-panel hidden">
+      <div class="card">
+        <h3 class="section-title">Help &amp; Support</h3>
+        <p>Find documentation on taking optimal photos, understanding confidence scores, or contacting support.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT RAIL -->
+  <aside class="right-rail" id="rightRail">
+    <div class="card breeds-card">
+      <h3 class="section-title">All Breeds</h3>
+      <button class="btn btn--ghost btn--block" id="viewAllBreedsBtn">View All Breeds</button>
+    </div>
+  </aside>
+
+</div>
+
+<footer class="footer">
+  <span>© 2026 Cattle &amp; Buffalo Breed Recognition of India. All rights reserved.</span>
+  <div class="footer__links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms &amp; Conditions</a>
+  </div>
+</footer>
+
+<div class="modal" id="breedModal">
+  <div class="modal__panel">
+    <button class="modal__close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

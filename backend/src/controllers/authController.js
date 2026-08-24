@@ -41,17 +41,13 @@ const loginUser = AsyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({ email: email.toLowerCase() });
-
-  const token = await generateToken(user._id)
-
   if (user && (await user.matchPassword(password))) {
-    res
-    .cookie("token", token)
-    .json({
+    res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      token: generateToken(user._id),
     });
   } else {
     throw new ApiError(401, 'Invalid email or password');

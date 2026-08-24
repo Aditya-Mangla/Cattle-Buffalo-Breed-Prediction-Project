@@ -1,0 +1,8 @@
+{
+  "name": "cattle-breed-prediction-project",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev"
+  }
+}

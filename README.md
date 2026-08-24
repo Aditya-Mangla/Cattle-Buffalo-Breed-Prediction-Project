@@ -146,12 +146,16 @@ rest of the app (routes, DB, frontend) independently.
 ## Setup
 
 ```bash
-npm install
+npm install --prefix backend
 cp .env.example .env   # then edit values, especially MONGO_URI and JWT_SECRET
-npm run dev             # nodemon, or `npm start` for plain node
+npm run dev             # run from the repository root
+# or: cd backend && npm run dev
 ```
 
 Requires a running MongoDB instance (local or Atlas) at the URI you set.
+
+The Express server also serves the `frontend/` folder at `http://localhost:5000`,
+so opening the API origin keeps browser requests and the backend on the same origin.
 
 ## API Overview
 
