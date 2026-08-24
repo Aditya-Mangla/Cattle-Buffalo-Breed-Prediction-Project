@@ -17,6 +17,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/images', express.static(path.join(__dirname, '../images')));
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -54,7 +55,7 @@ app.use((err, req, res, next) => {
 
 app.use(express.static(path.join(__dirname, '../../frontend')));
 app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/') || req.path.startsWith('/images/')) {
     return next();
   }
   res.sendFile(path.join(__dirname, '../../frontend/index.html'));

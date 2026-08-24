@@ -42,8 +42,7 @@ const breedSchema = new mongoose.Schema({
         type: String 
       }
     ],
-    imageUrl: 
-    { 
+    imageUrl: {
       type: String
     },
   },{ timestamps: true });
