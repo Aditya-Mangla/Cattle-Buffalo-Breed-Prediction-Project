@@ -1,10 +1,12 @@
-const asyncHandler = require('express-async-handler');
-const User = require('../models/User');
-const generateToken = require('../utils/generateToken');
+import { AsyncHandler } from '../utils/AsyncHandler.js';
+import { ApiError } from '../utils/ApiError.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
+import {User} from '../models/User.js';
+import generateToken from '../utils/generateToken.js';
 
 // @desc  Register a new user
 // @route POST /api/auth/register
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = AsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -31,34 +33,43 @@ const registerUser = asyncHandler(async (req, res) => {
 
 // @desc  Login and receive a JWT
 // @route POST /api/auth/login
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = AsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(400);
-    throw new Error('Email and password are required');
+    throw new ApiError(400, 'Email and password are required');
   }
 
   const user = await User.findOne({ email: email.toLowerCase() });
 
+  const token = await generateToken(user._id)
+
   if (user && (await user.matchPassword(password))) {
-    res.json({
+    res
+    .cookie("token", token)
+    .json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role,
-      token: generateToken(user._id),
+      role: user.role
     });
   } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+    throw new ApiError(401, 'Invalid email or password');
   }
 });
 
 // @desc  Get logged-in user's profile
 // @route GET /api/auth/me
-const getProfile = asyncHandler(async (req, res) => {
-  res.json(req.user);
+const getProfile = AsyncHandler(async (req, res) => {
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200, req.user, "Success")
+  )
 });
 
-module.exports = { registerUser, loginUser, getProfile };
+export { 
+  registerUser, 
+  loginUser, 
+  getProfile 
+};

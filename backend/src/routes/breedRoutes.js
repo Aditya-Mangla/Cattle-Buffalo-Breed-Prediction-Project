@@ -1,11 +1,12 @@
-import express from 'express'
-import {Router} from 'express';
-import {getBreeds,
+import { Router } from 'express';
+import { getBreeds,
   getBreedByIdOrLabel,
   createBreed,
   updateBreed,
-  deleteBreed} from '../controllers/breedController.js'
-const { protect, admin } = require('../middleware/auth');
+  deleteBreed } from '../controllers/breedController.js';
+import { protect, admin } from '../middleware/auth.js';
+
+const router = Router();
 
 router
   .route('/')
@@ -19,4 +20,4 @@ router
 
 router.get('/:idOrLabel', getBreedByIdOrLabel);
 
-module.exports = router;
+export default router;

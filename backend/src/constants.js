@@ -1,1 +1,1 @@
-export const DB_NAME = "cattle_breed_db"
+export const DB_NAME = "cattle_breed_predictor_db"

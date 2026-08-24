@@ -1,9 +1,14 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { ApiError } from '../utils/ApiError.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
+if (!fs.existsSync(uploadDir)) {      // This is temporary code, it is not necessary to add this.
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
@@ -23,7 +28,7 @@ const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error('Only .jpg, .jpeg, .png, .bmp, and .webp image files are allowed'));
+    cb(new ApiError(402, 'Only .jpg, .jpeg, .png, .bmp, and .webp image files are allowed'));
   }
 };
 
@@ -35,4 +40,4 @@ const upload = multer({
   limits: { fileSize: maxSizeBytes },
 });
 
-module.exports = upload;
+export default upload;

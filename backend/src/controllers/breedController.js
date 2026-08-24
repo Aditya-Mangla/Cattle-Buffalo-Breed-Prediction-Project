@@ -57,8 +57,7 @@ const createBreed = AsyncHandler(async (req, res) => {
 const updateBreed = AsyncHandler(async (req, res) => {
   const breed = await Breed.findById(req.params.id);
   if (!breed) {
-    res.status(404);
-    throw new Error('Breed not found');
+    throw new ApiError(404, 'Breed not found');
   }
   Object.assign(breed, req.body);
   const updated = await breed.save();
@@ -70,8 +69,7 @@ const updateBreed = AsyncHandler(async (req, res) => {
 const deleteBreed = AsyncHandler(async (req, res) => {
   const breed = await Breed.findById(req.params.id);
   if (!breed) {
-    res.status(404);
-    throw new Error('Breed not found');
+    throw new ApiError(404, 'Breed not found');
   }
   await breed.deleteOne();
   res.json({ message: 'Breed deleted' });
