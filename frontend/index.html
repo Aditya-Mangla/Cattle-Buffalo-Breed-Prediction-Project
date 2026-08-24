@@ -251,7 +251,7 @@
     <!-- PAGE VIEW: ALL BREEDS -->
     <div id="viewBreeds" class="view-panel hidden">
       <div class="card breeds-card">
-        <h3 class="section-title">All Registered Indigenous Breeds</h3>
+        <h3 class="section-title" id="allBreedsTitle">All Registered Indigenous Breeds</h3>
         <div class="search-box">
           <input type="text" id="breedSearch" placeholder="Search breed…">
         </div>
@@ -261,6 +261,7 @@
           <button class="pill" data-filter="Buffalo">Buffalo</button>
           <button class="pill" data-filter="Indigenous">Indigenous</button>
         </div>
+        <h3 class="section-title hidden" id="similarBreedsTitle">Top 3 Model Predictions</h3>
         <div class="breeds-grid" id="breedsGrid"></div>
       </div>
     </div>
