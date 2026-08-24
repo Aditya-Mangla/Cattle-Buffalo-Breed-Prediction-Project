@@ -4,11 +4,14 @@
    ============================================================ */
 
 const CONFIG = {
-  // If frontend and backend are served from the same server:
-  // API_BASE_URL: ""
-
-  // Use the backend origin when Express serves this page. Keep direct-file
-  // and separate frontend-server usage pointed at the local API.
+  /*
+   * If frontend and backend are served from the same server:
+   * API_BASE_URL: ""
+   *
+   * Use localhost:5000 when:
+   * 1. Frontend is opened using file://
+   * 2. Frontend is served separately on another port
+   */
   API_BASE_URL:
     window.location.port === "5000" ||
     window.location.protocol === "file:"
@@ -47,13 +50,14 @@ const els = {
   resultBreedName: document.getElementById("resultBreedName"),
   resultLatin: document.getElementById("resultLatin"),
   resultConfidence: document.getElementById("resultConfidence"),
-  detailTable: document.getElementById("detailTable"),
 
+  detailTable: document.getElementById("detailTable"),
   traitList: document.getElementById("traitList"),
   traitListBottom: document.getElementById("traitListBottom"),
   suitedList: document.getElementById("suitedList"),
 
   historyList: document.getElementById("historyList"),
+  fullHistoryList: document.getElementById("fullHistoryList"),
   viewAllHistory: document.getElementById("viewAllHistory"),
 
   breedsGrid: document.getElementById("breedsGrid"),
@@ -69,7 +73,6 @@ const els = {
   modalClose: document.getElementById("modalClose"),
 
   toast: document.getElementById("toast"),
-
   learnMoreBtn: document.getElementById("learnMoreBtn")
 };
 
@@ -105,8 +108,13 @@ const authEls = {
 
   guestBtn: document.getElementById("guestBtn"),
 
-  switchToRegister: document.getElementById("switchToRegister"),
-  switchToLogin: document.getElementById("switchToLogin"),
+  switchToRegister: document.getElementById(
+    "switchToRegister"
+  ),
+
+  switchToLogin: document.getElementById(
+    "switchToLogin"
+  ),
 
   switchToRegisterText: document.getElementById(
     "switchToRegisterText"
@@ -116,11 +124,21 @@ const authEls = {
     "switchToLoginText"
   ),
 
-  sidebarUser: document.getElementById("sidebarUser"),
-  sidebarUserName: document.getElementById("sidebarUserName"),
-  sidebarUserAvatar: document.getElementById("sidebarUserAvatar"),
+  sidebarUser: document.getElementById(
+    "sidebarUser"
+  ),
 
-  logoutBtn: document.getElementById("logoutBtn")
+  sidebarUserName: document.getElementById(
+    "sidebarUserName"
+  ),
+
+  sidebarUserAvatar: document.getElementById(
+    "sidebarUserAvatar"
+  ),
+
+  logoutBtn: document.getElementById(
+    "logoutBtn"
+  )
 };
 
 
@@ -131,6 +149,7 @@ const authEls = {
 function apiUrl(endpoint) {
   return `${CONFIG.API_BASE_URL}${endpoint}`;
 }
+
 
 async function readJsonResponse(response) {
   const body = await response.text();
@@ -160,9 +179,14 @@ function getToken() {
 
 function setToken(token) {
   if (token) {
-    localStorage.setItem("authToken", token);
+    localStorage.setItem(
+      "authToken",
+      token
+    );
   } else {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem(
+      "authToken"
+    );
   }
 }
 
@@ -188,7 +212,8 @@ function getAuthHeaders() {
    CURRENT USER
    ============================================================ */
 
-const SESSION_KEY = "breedRecognition.currentUser";
+const SESSION_KEY =
+  "breedRecognition.currentUser";
 
 
 function getCurrentUser() {
@@ -209,7 +234,9 @@ function setCurrentUser(user) {
       JSON.stringify(user)
     );
   } else {
-    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(
+      SESSION_KEY
+    );
   }
 }
 
@@ -219,15 +246,22 @@ function setCurrentUser(user) {
    ============================================================ */
 
 function showToast(message) {
-  if (!els.toast) return;
+  if (!els.toast) {
+    return;
+  }
 
   els.toast.textContent = message;
-  els.toast.classList.add("is-visible");
+
+  els.toast.classList.add(
+    "is-visible"
+  );
 
   clearTimeout(toastTimer);
 
   toastTimer = setTimeout(() => {
-    els.toast.classList.remove("is-visible");
+    els.toast.classList.remove(
+      "is-visible"
+    );
   }, 2600);
 }
 
@@ -245,7 +279,7 @@ function escapeHtml(str = "") {
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#39;"
+        "'": "&#039;"
       })[char]
   );
 }
@@ -272,7 +306,9 @@ function formatConfidence(value) {
 
 
 function formatDate(date) {
-  if (!date) return "—";
+  if (!date) {
+    return "—";
+  }
 
   const d = new Date(date);
 
@@ -302,9 +338,13 @@ function placeholderImg() {
       <svg xmlns="http://www.w3.org/2000/svg"
            width="80"
            height="80">
-        <rect width="80"
-              height="80"
-              fill="#e7f6ec"/>
+
+        <rect
+          width="80"
+          height="80"
+          fill="#e7f6ec"
+        />
+
       </svg>
     `)
   );
@@ -351,11 +391,14 @@ function setResultState(state) {
    ============================================================ */
 
 function wireUploadTriggers() {
-  if (!els.fileInput) return;
+  if (!els.fileInput) {
+    return;
+  }
 
   const openPicker = () => {
     els.fileInput.click();
   };
+
 
   if (els.heroUploadBtn) {
     els.heroUploadBtn.addEventListener(
@@ -364,12 +407,14 @@ function wireUploadTriggers() {
     );
   }
 
+
   if (els.dropzone) {
     els.dropzone.addEventListener(
       "click",
       openPicker
     );
   }
+
 
   els.fileInput.addEventListener(
     "change",
@@ -385,6 +430,7 @@ function wireUploadTriggers() {
       els.fileInput.value = "";
     }
   );
+
 
   if (els.dropzone) {
     ["dragenter", "dragover"].forEach(
@@ -402,6 +448,7 @@ function wireUploadTriggers() {
       }
     );
 
+
     ["dragleave", "drop"].forEach(
       (eventName) => {
         els.dropzone.addEventListener(
@@ -417,6 +464,7 @@ function wireUploadTriggers() {
       }
     );
 
+
     els.dropzone.addEventListener(
       "drop",
       (event) => {
@@ -430,10 +478,12 @@ function wireUploadTriggers() {
       }
     );
 
+
     els.dropzone.setAttribute(
       "tabindex",
       "0"
     );
+
 
     els.dropzone.addEventListener(
       "keydown",
@@ -443,11 +493,13 @@ function wireUploadTriggers() {
           event.key === " "
         ) {
           event.preventDefault();
+
           els.dropzone.click();
         }
       }
     );
   }
+
 
   if (els.retryBtn) {
     els.retryBtn.addEventListener(
@@ -469,15 +521,22 @@ function handleFile(file) {
     return;
   }
 
-  if (file.size > CONFIG.MAX_FILE_BYTES) {
+
+  if (
+    file.size >
+    CONFIG.MAX_FILE_BYTES
+  ) {
     showToast(
-      "Image is larger than 5MB."
+      "Image is larger than 8MB."
     );
 
     return;
   }
 
-  const reader = new FileReader();
+
+  const reader =
+    new FileReader();
+
 
   reader.onload = () => {
     setResultState("loading");
@@ -488,11 +547,13 @@ function handleFile(file) {
     );
   };
 
+
   reader.onerror = () => {
     showToast(
       "Unable to read the selected image."
     );
   };
+
 
   reader.readAsDataURL(file);
 }
@@ -500,55 +561,72 @@ function handleFile(file) {
 
 /* ============================================================
    PREDICT BREED
-  POST /api/predictions
+   POST /api/predictions
    ============================================================ */
 
 async function predictBreed(
   file,
   imageDataUrl
 ) {
-  const formData = new FormData();
+  const formData =
+    new FormData();
 
-  // MUST MATCH upload.single('image')
-  formData.append("image", file);
+  /*
+   * MUST MATCH:
+   * upload.single("image")
+   */
+  formData.append(
+    "image",
+    file
+  );
+
 
   try {
-    const response = await fetch(
-      apiUrl(CONFIG.PREDICTION_ENDPOINT),
-      {
-        method: "POST",
+    const response =
+      await fetch(
+        apiUrl(
+          CONFIG.PREDICTION_ENDPOINT
+        ),
+        {
+          method: "POST",
+          headers:
+            getAuthHeaders(),
+          body: formData
+        }
+      );
 
-        headers: getAuthHeaders(),
-
-        body: formData
-      }
-    );
 
     if (!response.ok) {
       let errorMessage =
         `Prediction failed (${response.status})`;
 
-      try {
-        const errorData =
-          await readJsonResponse(response);
+      const errorData =
+        await readJsonResponse(
+          response
+        );
 
-        errorMessage =
-          errorData.message ||
-          errorData.error ||
-          errorMessage;
-      } catch (error) {
-        // Ignore invalid JSON
-      }
+      errorMessage =
+        errorData.message ||
+        errorData.error ||
+        errorMessage;
 
-      throw new Error(errorMessage);
+      throw new Error(
+        errorMessage
+      );
     }
 
-    const data = await readJsonResponse(response);
+
+    const data =
+      await readJsonResponse(
+        response
+      );
+
 
     console.log(
       "Prediction API response:",
       data
     );
+
 
     const prediction =
       data.prediction ||
@@ -556,15 +634,20 @@ async function predictBreed(
       data.data ||
       data;
 
+
     renderPrediction(
       prediction,
       imageDataUrl,
       data
     );
 
-    // Refresh history for logged-in user
+
+    /*
+     * Refresh dashboard history
+     * after a successful prediction.
+     */
     if (getToken()) {
-      loadPredictionHistory();
+      await loadPredictionHistory(false);
     }
 
   } catch (error) {
@@ -573,7 +656,10 @@ async function predictBreed(
       error
     );
 
-    if (CONFIG.DEMO_FALLBACK) {
+
+    if (
+      CONFIG.DEMO_FALLBACK
+    ) {
       const mock =
         mockPrediction();
 
@@ -589,6 +675,7 @@ async function predictBreed(
 
       return;
     }
+
 
     if (els.resultErrorMsg) {
       els.resultErrorMsg.textContent =
@@ -611,21 +698,28 @@ function renderPrediction(
   originalResponse = null
 ) {
   const merged =
-    mergeWithReference(apiData);
+    mergeWithReference(
+      apiData
+    );
+
 
   merged.imageDataUrl =
     imageDataUrl;
 
-    merged.predictionId =
-      apiData?._id ||
-      apiData?.id ||
-      apiData?.predictionId ||
+
+  merged.predictionId =
+    apiData?._id ||
+    apiData?.id ||
+    apiData?.predictionId ||
     originalResponse?._id ||
     originalResponse?.id ||
-      originalResponse?.predictionId ||
+    originalResponse?.predictionId ||
     null;
 
-  lastPrediction = merged;
+
+  lastPrediction =
+    merged;
+
 
   if (els.resultImg) {
     els.resultImg.src =
@@ -633,10 +727,12 @@ function renderPrediction(
       placeholderImg();
   }
 
+
   if (els.resultBreedName) {
     els.resultBreedName.textContent =
       merged.breed;
   }
+
 
   if (els.resultLatin) {
     els.resultLatin.textContent =
@@ -645,6 +741,7 @@ function renderPrediction(
         : "";
   }
 
+
   if (els.resultConfidence) {
     els.resultConfidence.textContent =
       formatConfidence(
@@ -652,13 +749,16 @@ function renderPrediction(
       );
   }
 
+
   const confidence =
     Number(merged.confidence);
+
 
   const percentage =
     confidence <= 1
       ? confidence * 100
       : confidence;
+
 
   if (els.matchBadge) {
     els.matchBadge.textContent =
@@ -671,6 +771,7 @@ function renderPrediction(
       percentage < 60
     );
   }
+
 
   if (els.detailTable) {
     els.detailTable.innerHTML = [
@@ -685,23 +786,35 @@ function renderPrediction(
     ]
       .map(
         ([key, value]) =>
-          `<tr>
+          `
+          <tr>
             <td>${escapeHtml(key)}</td>
-            <td>${escapeHtml(String(value ?? "—"))}</td>
-          </tr>`
+
+            <td>
+              ${escapeHtml(
+                String(value ?? "—")
+              )}
+            </td>
+          </tr>
+          `
       )
       .join("");
   }
+
 
   renderTraits(
     merged.characteristics
   );
 
+
   renderSuitedFor(
     merged.suitedFor
   );
 
-  setResultState("filled");
+
+  setResultState(
+    "filled"
+  );
 }
 
 
@@ -720,9 +833,12 @@ function mergeWithReference(
     apiData.class_name ||
     "";
 
+
   const ref =
-    findBreedByName(breedName) ||
-    {};
+    findBreedByName(
+      breedName
+    ) || {};
+
 
   return {
     breed:
@@ -802,17 +918,23 @@ function renderTraits(list) {
       ? list
           .map(
             (item) =>
-              `<li>${escapeHtml(item)}</li>`
+              `<li>${escapeHtml(
+                item
+              )}</li>`
           )
           .join("")
-      : `<li class="muted">
-           No characteristics available.
-         </li>`;
+      : `
+        <li class="muted">
+          No characteristics available.
+        </li>
+      `;
+
 
   if (els.traitList) {
     els.traitList.innerHTML =
       html;
   }
+
 
   if (els.traitListBottom) {
     els.traitListBottom.innerHTML =
@@ -821,8 +943,15 @@ function renderTraits(list) {
 }
 
 
+/* ============================================================
+   SUITED FOR
+   ============================================================ */
+
 function renderSuitedFor(list) {
-  if (!els.suitedList) return;
+  if (!els.suitedList) {
+    return;
+  }
+
 
   els.suitedList.innerHTML =
     Array.isArray(list) &&
@@ -830,25 +959,30 @@ function renderSuitedFor(list) {
       ? list
           .map(
             (item) =>
-              `<li>${escapeHtml(item)}</li>`
+              `<li>${escapeHtml(
+                item
+              )}</li>`
           )
           .join("")
-      : `<li class="muted">
-           No data available.
-         </li>`;
+      : `
+        <li class="muted">
+          No data available.
+        </li>
+      `;
 }
 
 
 /* ============================================================
    MOCK PREDICTION
-   Only used if DEMO_FALLBACK = true
    ============================================================ */
 
 function mockPrediction() {
   const data =
-    typeof BREEDS_DATA !== "undefined"
+    typeof BREEDS_DATA !==
+    "undefined"
       ? BREEDS_DATA
       : [];
+
 
   if (!data.length) {
     return {
@@ -871,31 +1005,43 @@ function mockPrediction() {
     };
   }
 
+
   const breed =
     data[
       Math.floor(
-        Math.random() * data.length
+        Math.random() *
+          data.length
       )
     ];
+
 
   return {
     breed: breed.name,
     type: breed.type,
+
     confidence:
       0.84 +
-      Math.random() * 0.14,
+      Math.random() *
+        0.14,
+
     scientific_name:
       breed.scientific,
+
     origin:
       breed.origin,
+
     body_size:
       breed.bodySize,
+
     purpose:
       breed.purpose,
+
     special_features:
       breed.specialFeatures,
+
     characteristics:
       breed.characteristics,
+
     suited_for:
       breed.suitedFor
   };
@@ -909,127 +1055,168 @@ function mockPrediction() {
 /* ---------------- REGISTER ---------------- */
 
 async function registerUser({
-    name,
-    email,
-    password
+  name,
+  email,
+  password
 }) {
-    try {
-        const response = await fetch(
-            apiUrl(`${CONFIG.AUTH_ENDPOINT}/register`),
-            {
-                method: "POST",
+  try {
+    const response =
+      await fetch(
+        apiUrl(
+          `${CONFIG.AUTH_ENDPOINT}/register`
+        ),
+        {
+          method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-                body: JSON.stringify({
-                    name,
-                    email,
-                    password
-                })
-            }
-        );
-
-        const data = await readJsonResponse(response);
-
-        console.log(
-            "REGISTER RESPONSE:",
-            data
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                data.message ||
-                data.error ||
-                "Registration failed"
-            );
+          body: JSON.stringify({
+            name,
+            email,
+            password
+          })
         }
+      );
 
-        const authData = data.data || data;
 
-        if (authData.token) {
-          setToken(authData.token);
-        }
+    const data =
+      await readJsonResponse(
+        response
+      );
 
-        return authData.user || authData;
 
-    } catch (error) {
-        console.error(
-            "REGISTER ERROR:",
-            error
-        );
+    console.log(
+      "REGISTER RESPONSE:",
+      data
+    );
 
-        throw error;
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+        data.error ||
+        "Registration failed"
+      );
     }
+
+
+    const authData =
+      data.data || data;
+
+
+    if (authData.token) {
+      setToken(
+        authData.token
+      );
+    }
+
+
+    return (
+      authData.user ||
+      authData
+    );
+
+  } catch (error) {
+    console.error(
+      "REGISTER ERROR:",
+      error
+    );
+
+    throw error;
+  }
 }
 
 
 /* ---------------- LOGIN ---------------- */
 
-async function loginUser({ email, password }) {
-    try {
-        const response = await fetch(
-            apiUrl(`${CONFIG.AUTH_ENDPOINT}/login`),
-            {
-                method: "POST",
+async function loginUser({
+  email,
+  password
+}) {
+  try {
+    const response =
+      await fetch(
+        apiUrl(
+          `${CONFIG.AUTH_ENDPOINT}/login`
+        ),
+        {
+          method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-                body: JSON.stringify({
-                    email,
-                    password
-                })
-            }
-        );
-
-        const data = await readJsonResponse(response);
-
-        console.log("LOGIN RESPONSE:", data);
-
-        if (!response.ok) {
-            throw new Error(
-                data.message ||
-                data.error ||
-                "Login failed"
-            );
+          body: JSON.stringify({
+            email,
+            password
+          })
         }
+      );
 
-        const authData = data.data || data;
 
-        if (!authData.token) {
-            console.warn(
-                "No token received from backend"
-            );
-        }
+    const data =
+      await readJsonResponse(
+        response
+      );
 
-        if (authData.token) {
-          setToken(authData.token);
-        }
 
-        return authData.user || authData;
+    console.log(
+      "LOGIN RESPONSE:",
+      data
+    );
 
-    } catch (error) {
-        console.error(
-            "LOGIN ERROR:",
-            error
-        );
 
-        throw error;
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+        data.error ||
+        "Login failed"
+      );
     }
+
+
+    const authData =
+      data.data || data;
+
+
+    if (authData.token) {
+      setToken(
+        authData.token
+      );
+    }
+
+
+    return (
+      authData.user ||
+      authData
+    );
+
+  } catch (error) {
+    console.error(
+      "LOGIN ERROR:",
+      error
+    );
+
+    throw error;
+  }
 }
 
 
 /* ---------------- GET PROFILE ---------------- */
 
 async function getProfile() {
-  const token = getToken();
+  const token =
+    getToken();
+
 
   if (!token) {
     return null;
   }
+
 
   const response =
     await fetch(
@@ -1038,11 +1225,11 @@ async function getProfile() {
       ),
       {
         method: "GET",
-
         headers:
           getAuthHeaders()
       }
     );
+
 
   if (!response.ok) {
     if (
@@ -1056,8 +1243,12 @@ async function getProfile() {
     return null;
   }
 
+
   const data =
-    await readJsonResponse(response);
+    await readJsonResponse(
+      response
+    );
+
 
   return (
     data.user ||
@@ -1070,7 +1261,9 @@ async function getProfile() {
 /* ---------------- LOGOUT ---------------- */
 
 async function logoutUser() {
-  const token = getToken();
+  const token =
+    getToken();
+
 
   try {
     if (token) {
@@ -1080,7 +1273,6 @@ async function logoutUser() {
         ),
         {
           method: "POST",
-
           headers:
             getAuthHeaders()
         }
@@ -1092,6 +1284,7 @@ async function logoutUser() {
       error
     );
   }
+
 
   setToken(null);
   setCurrentUser(null);
@@ -1109,6 +1302,7 @@ function showAuthScreen() {
     );
   }
 
+
   if (authEls.dashboard) {
     authEls.dashboard.classList.add(
       "hidden"
@@ -1124,11 +1318,13 @@ function showDashboard(user) {
     );
   }
 
+
   if (authEls.dashboard) {
     authEls.dashboard.classList.remove(
       "hidden"
     );
   }
+
 
   const label =
     user
@@ -1137,12 +1333,18 @@ function showDashboard(user) {
         user.email
       : "Guest";
 
-  if (authEls.sidebarUserName) {
+
+  if (
+    authEls.sidebarUserName
+  ) {
     authEls.sidebarUserName.textContent =
       label;
   }
 
-  if (authEls.sidebarUserAvatar) {
+
+  if (
+    authEls.sidebarUserAvatar
+  ) {
     authEls.sidebarUserAvatar.textContent =
       label
         .trim()
@@ -1164,31 +1366,50 @@ function wireAuth() {
   ) {
     authEls.tabLogin.addEventListener(
       "click",
-      () => switchAuthTab("login")
+      () =>
+        switchAuthTab(
+          "login"
+        )
     );
+
 
     authEls.tabRegister.addEventListener(
       "click",
-      () => switchAuthTab("register")
+      () =>
+        switchAuthTab(
+          "register"
+        )
     );
   }
 
-  if (authEls.switchToRegister) {
+
+  if (
+    authEls.switchToRegister
+  ) {
     authEls.switchToRegister.addEventListener(
       "click",
       (event) => {
         event.preventDefault();
-        switchAuthTab("register");
+
+        switchAuthTab(
+          "register"
+        );
       }
     );
   }
 
-  if (authEls.switchToLogin) {
+
+  if (
+    authEls.switchToLogin
+  ) {
     authEls.switchToLogin.addEventListener(
       "click",
       (event) => {
         event.preventDefault();
-        switchAuthTab("login");
+
+        switchAuthTab(
+          "login"
+        );
       }
     );
   }
@@ -1202,33 +1423,45 @@ function wireAuth() {
       async (event) => {
         event.preventDefault();
 
+
         if (authEls.loginError) {
           authEls.loginError.textContent =
             "";
         }
+
 
         const formData =
           new FormData(
             authEls.loginForm
           );
 
+
         try {
           const user =
             await loginUser({
               email:
                 String(
-                  formData.get("email") ||
-                    ""
+                  formData.get(
+                    "email"
+                  ) || ""
                 ).trim(),
 
               password:
-                formData.get("password") ||
-                ""
+                formData.get(
+                  "password"
+                ) || ""
             });
 
-          setCurrentUser(user);
 
-          showDashboard(user);
+          setCurrentUser(
+            user
+          );
+
+
+          showDashboard(
+            user
+          );
+
 
           showToast(
             `Welcome back, ${
@@ -1238,7 +1471,14 @@ function wireAuth() {
             }!`
           );
 
-          await loadPredictionHistory();
+
+          /*
+           * Dashboard history
+           * = latest 6
+           */
+          await loadPredictionHistory(
+            false
+          );
 
         } catch (error) {
           console.error(error);
@@ -1257,51 +1497,71 @@ function wireAuth() {
 
   /* ---------------- REGISTER FORM ---------------- */
 
-  if (authEls.registerForm) {
+  if (
+    authEls.registerForm
+  ) {
     authEls.registerForm.addEventListener(
       "submit",
       async (event) => {
         event.preventDefault();
 
-        if (authEls.registerError) {
+
+        if (
+          authEls.registerError
+        ) {
           authEls.registerError.textContent =
             "";
         }
+
 
         const formData =
           new FormData(
             authEls.registerForm
           );
 
+
         try {
           const user =
             await registerUser({
               name:
                 String(
-                  formData.get("name") ||
-                    ""
+                  formData.get(
+                    "name"
+                  ) || ""
                 ).trim(),
 
               email:
                 String(
-                  formData.get("email") ||
-                    ""
+                  formData.get(
+                    "email"
+                  ) || ""
                 ).trim(),
 
               password:
-                formData.get("password") ||
-                ""
+                formData.get(
+                  "password"
+                ) || ""
             });
 
-          setCurrentUser(user);
 
-          showDashboard(user);
+          setCurrentUser(
+            user
+          );
+
+
+          showDashboard(
+            user
+          );
+
 
           showToast(
             "Account created successfully!"
           );
 
-          await loadPredictionHistory();
+
+          await loadPredictionHistory(
+            false
+          );
 
         } catch (error) {
           console.error(error);
@@ -1347,15 +1607,23 @@ function wireAuth() {
 
         showAuthScreen();
 
+
         if (authEls.loginForm) {
           authEls.loginForm.reset();
         }
 
-        if (authEls.registerForm) {
+
+        if (
+          authEls.registerForm
+        ) {
           authEls.registerForm.reset();
         }
 
-        switchAuthTab("login");
+
+        switchAuthTab(
+          "login"
+        );
+
 
         showToast(
           "Logged out successfully."
@@ -1370,9 +1638,12 @@ function wireAuth() {
    AUTH TAB
    ============================================================ */
 
-function switchAuthTab(which) {
+function switchAuthTab(
+  which
+) {
   const isLogin =
     which === "login";
+
 
   if (authEls.tabLogin) {
     authEls.tabLogin.classList.toggle(
@@ -1386,6 +1657,7 @@ function switchAuthTab(which) {
     );
   }
 
+
   if (authEls.tabRegister) {
     authEls.tabRegister.classList.toggle(
       "is-active",
@@ -1398,12 +1670,14 @@ function switchAuthTab(which) {
     );
   }
 
+
   if (authEls.loginForm) {
     authEls.loginForm.classList.toggle(
       "hidden",
       !isLogin
     );
   }
+
 
   if (authEls.registerForm) {
     authEls.registerForm.classList.toggle(
@@ -1412,26 +1686,36 @@ function switchAuthTab(which) {
     );
   }
 
-  if (authEls.switchToRegisterText) {
+
+  if (
+    authEls.switchToRegisterText
+  ) {
     authEls.switchToRegisterText.classList.toggle(
       "hidden",
       !isLogin
     );
   }
 
-  if (authEls.switchToLoginText) {
+
+  if (
+    authEls.switchToLoginText
+  ) {
     authEls.switchToLoginText.classList.toggle(
       "hidden",
       isLogin
     );
   }
 
+
   if (authEls.loginError) {
     authEls.loginError.textContent =
       "";
   }
 
-  if (authEls.registerError) {
+
+  if (
+    authEls.registerError
+  ) {
     authEls.registerError.textContent =
       "";
   }
@@ -1440,17 +1724,35 @@ function switchAuthTab(which) {
 
 /* ============================================================
    PREDICTION HISTORY
-  GET /api/predictions/history
+   GET /api/predictions/history
    ============================================================ */
 
-async function loadPredictionHistory() {
-  const token = getToken();
+/*
+ * showAll = false
+ *     Dashboard → latest 6
+ *
+ * showAll = true
+ *     Full History page → ALL
+ */
+
+async function loadPredictionHistory(
+  showAll = false
+) {
+  const token =
+    getToken();
+
 
   if (!token) {
     historyData = [];
-    renderHistory([]);
+
+    renderHistory(
+      [],
+      showAll
+    );
+
     return;
   }
+
 
   try {
     const response =
@@ -1460,11 +1762,11 @@ async function loadPredictionHistory() {
         ),
         {
           method: "GET",
-
           headers:
             getAuthHeaders()
         }
       );
+
 
     if (!response.ok) {
       throw new Error(
@@ -1472,8 +1774,36 @@ async function loadPredictionHistory() {
       );
     }
 
+
     const data =
-      await readJsonResponse(response);
+      await readJsonResponse(
+        response
+      );
+
+
+    console.log(
+      "HISTORY API RESPONSE:",
+      data
+    );
+
+
+    /*
+     * Supports multiple backend response formats:
+     *
+     * {
+     *   predictions: [...]
+     * }
+     *
+     * {
+     *   history: [...]
+     * }
+     *
+     * {
+     *   data: [...]
+     * }
+     *
+     * [...]
+     */
 
     historyData =
       data.predictions ||
@@ -1482,12 +1812,25 @@ async function loadPredictionHistory() {
       data ||
       [];
 
-    if (!Array.isArray(historyData)) {
+
+    if (
+      !Array.isArray(
+        historyData
+      )
+    ) {
       historyData = [];
     }
 
+
+    /*
+     * Render either:
+     *
+     * Dashboard → 6
+     * History page → all
+     */
     renderHistory(
-      historyData
+      historyData,
+      showAll
     );
 
   } catch (error) {
@@ -1496,9 +1839,15 @@ async function loadPredictionHistory() {
       error
     );
 
+
     historyData = [];
 
-    renderHistory([]);
+
+    renderHistory(
+      [],
+      showAll
+    );
+
 
     if (
       error.message.includes(
@@ -1519,20 +1868,38 @@ async function loadPredictionHistory() {
    RENDER HISTORY
    ============================================================ */
 
+/*
+ * showAll = false
+ *     Render only latest 6 records.
+ *
+ * showAll = true
+ *     Render every record returned by API.
+ */
+
 function renderHistory(
-  backendHistory = null
+  backendHistory = null,
+  showAll = false
 ) {
-  if (!els.historyList) {
+  const historyContainer = showAll
+    ? els.fullHistoryList
+    : els.historyList;
+
+  if (!historyContainer) {
     return;
   }
+
 
   const list =
     backendHistory !== null
       ? backendHistory
       : historyData;
 
-  if (!list.length) {
-    els.historyList.innerHTML = `
+
+  if (
+    !Array.isArray(list) ||
+    !list.length
+  ) {
+    historyContainer.innerHTML = `
       <p class="history-empty">
         No scans yet — upload an image to get started.
       </p>
@@ -1541,25 +1908,43 @@ function renderHistory(
     return;
   }
 
-  els.historyList.innerHTML =
-    list
-      .slice(0, 6)
+
+  /*
+   * Dashboard:
+   * latest 6
+   *
+   * Full History:
+   * everything
+   */
+  const displayList =
+    showAll
+      ? list
+      : list.slice(0, 6);
+
+
+  historyContainer.innerHTML =
+    displayList
       .map((item) => {
         const breed =
           item.breed ||
           item.name ||
           item.predictedBreed ||
+          item.predicted_breed ||
           "Unknown";
+
 
         const type =
           item.type ||
           item.animalType ||
+          item.animal_type ||
           "";
+
 
         const confidence =
           item.confidence ??
           item.score ??
           item.probability;
+
 
         const image =
           item.imageUrl ||
@@ -1567,15 +1952,18 @@ function renderHistory(
           item.imageDataUrl ||
           placeholderImg();
 
+
         const id =
           item._id ||
           item.id ||
           "";
 
+
         const date =
           item.createdAt ||
           item.date ||
           item.created_at;
+
 
         return `
           <div
@@ -1589,9 +1977,11 @@ function renderHistory(
             <img
               src="${escapeHtml(image)}"
               alt="${escapeHtml(breed)}"
+              loading="lazy"
             >
 
             <div class="history-item__meta">
+
               <strong>
                 ${escapeHtml(breed)}
               </strong>
@@ -1599,16 +1989,21 @@ function renderHistory(
               <span>
                 ${escapeHtml(type)}
               </span>
+
             </div>
 
             <div class="history-item__right">
+
               <span class="history-score">
-                ${formatConfidence(confidence)}
+                ${formatConfidence(
+                  confidence
+                )}
               </span>
 
               <time>
                 ${formatDate(date)}
               </time>
+
             </div>
 
           </div>
@@ -1616,23 +2011,49 @@ function renderHistory(
       })
       .join("");
 
-  els.historyList
+
+  /*
+   * History item click handling
+   */
+  historyContainer
     .querySelectorAll(
       ".history-item"
     )
     .forEach((node) => {
-      node.addEventListener(
-        "click",
+      const openHistoryItem =
         () => {
           const id =
             node.dataset.id;
 
+
           if (id) {
-            loadPredictionById(id);
+            loadPredictionById(
+              id
+            );
           } else {
             openBreedModalByName(
               node.dataset.name
             );
+          }
+        };
+
+
+      node.addEventListener(
+        "click",
+        openHistoryItem
+      );
+
+
+      node.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault();
+
+            openHistoryItem();
           }
         }
       );
@@ -1641,28 +2062,105 @@ function renderHistory(
 
 
 /* ============================================================
+   OPEN FULL HISTORY PAGE
+   ============================================================ */
+
+async function openHistoryPage() {
+  /*
+   * Hide every view.
+   */
+  document
+    .querySelectorAll(
+      ".view-panel"
+    )
+    .forEach((panel) => {
+      panel.classList.add(
+        "hidden"
+      );
+    });
+
+
+  /*
+   * Show History page.
+   */
+  const historyView =
+    document.getElementById(
+      "viewHistory"
+    );
+
+
+  if (historyView) {
+    historyView.classList.remove(
+      "hidden"
+    );
+
+
+    /*
+     * Scroll to History page.
+     */
+    historyView.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+
+  /*
+   * Make History sidebar active.
+   */
+  document
+    .querySelectorAll(
+      ".nav__item"
+    )
+    .forEach((nav) => {
+      nav.classList.toggle(
+        "is-active",
+        nav.dataset.view ===
+          "history"
+      );
+    });
+
+
+  /*
+   * IMPORTANT:
+   *
+   * true means:
+   * show ALL history records.
+   */
+  await loadPredictionHistory(
+    true
+  );
+}
+
+
+/* ============================================================
    GET SINGLE PREDICTION
-  GET /api/predictions/:id
+   GET /api/predictions/:id
    ============================================================ */
 
 async function loadPredictionById(
   id
 ) {
-  if (!id) return;
+  if (!id) {
+    return;
+  }
+
 
   try {
     const response =
       await fetch(
         apiUrl(
-          `${CONFIG.PREDICTION_ENDPOINT}/${encodeURIComponent(id)}`
+          `${CONFIG.PREDICTION_ENDPOINT}/${encodeURIComponent(
+            id
+          )}`
         ),
         {
           method: "GET",
-
           headers:
             getAuthHeaders()
         }
       );
+
 
     if (!response.ok) {
       throw new Error(
@@ -1670,13 +2168,18 @@ async function loadPredictionById(
       );
     }
 
+
     const data =
-      await readJsonResponse(response);
+      await readJsonResponse(
+        response
+      );
+
 
     const prediction =
       data.prediction ||
       data.data ||
       data;
+
 
     const image =
       prediction.imageUrl ||
@@ -1684,17 +2187,35 @@ async function loadPredictionById(
       prediction.imageDataUrl ||
       null;
 
+
     renderPrediction(
       prediction,
       image,
       data
     );
 
+
+    /*
+     * Scroll back to result section
+     * if available.
+     */
+    const resultSection =
+      document.querySelector(
+        ".result-card"
+      );
+
+
+    resultSection?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
   } catch (error) {
     console.error(
       "Prediction details error:",
       error
     );
+
 
     showToast(
       "Unable to load prediction details."
@@ -1717,14 +2238,19 @@ async function loadBreedsFromBackend() {
         )
       );
 
+
     if (!response.ok) {
       throw new Error(
         `Breeds request failed (${response.status})`
       );
     }
 
+
     const data =
-      await readJsonResponse(response);
+      await readJsonResponse(
+        response
+      );
+
 
     backendBreeds =
       data.breeds ||
@@ -1732,9 +2258,15 @@ async function loadBreedsFromBackend() {
       data ||
       [];
 
-    if (!Array.isArray(backendBreeds)) {
+
+    if (
+      !Array.isArray(
+        backendBreeds
+      )
+    ) {
       backendBreeds = [];
     }
+
 
     renderBreedsGrid();
 
@@ -1744,7 +2276,7 @@ async function loadBreedsFromBackend() {
       error
     );
 
-    // Use local BREEDS_DATA as fallback
+
     backendBreeds = [];
 
     renderBreedsGrid();
@@ -1764,9 +2296,12 @@ async function loadBreedByIdOrLabel(
     const response =
       await fetch(
         apiUrl(
-          `${CONFIG.BREED_ENDPOINT}/${encodeURIComponent(idOrLabel)}`
+          `${CONFIG.BREED_ENDPOINT}/${encodeURIComponent(
+            idOrLabel
+          )}`
         )
       );
+
 
     if (!response.ok) {
       throw new Error(
@@ -1774,8 +2309,12 @@ async function loadBreedByIdOrLabel(
       );
     }
 
+
     const data =
-      await readJsonResponse(response);
+      await readJsonResponse(
+        response
+      );
+
 
     return (
       data.breed ||
@@ -1800,24 +2339,39 @@ async function loadBreedByIdOrLabel(
 
 function getAllBreedsForUI() {
   if (
-    Array.isArray(backendBreeds) &&
+    Array.isArray(
+      backendBreeds
+    ) &&
     backendBreeds.length
   ) {
     return backendBreeds;
   }
 
+
   if (
-    typeof BREEDS_DATA !== "undefined" &&
-    Array.isArray(BREEDS_DATA)
+    typeof BREEDS_DATA !==
+      "undefined" &&
+    Array.isArray(
+      BREEDS_DATA
+    )
   ) {
     return BREEDS_DATA;
   }
+
 
   return [];
 }
 
 
-function normalizeBreed(breed) {
+function normalizeBreed(
+  breed
+) {
+  const image =
+    breed.image ||
+    breed.imageUrl ||
+    breed.image_url ||
+    "";
+
   return {
     name:
       breed.name ||
@@ -1873,13 +2427,17 @@ function normalizeBreed(breed) {
         : [],
 
     image:
-      breed.image ||
-      breed.imageUrl ||
-      breed.image_url ||
+      image
+        ? image.startsWith("/")
+          ? `${CONFIG.API_BASE_URL}${image}`
+          : image
+        :
       placeholderImg(),
 
     tags:
-      Array.isArray(breed.tags)
+      Array.isArray(
+        breed.tags
+      )
         ? breed.tags
         : []
   };
@@ -1893,14 +2451,17 @@ function findBreedByName(
     return null;
   }
 
+
   const breeds =
     getAllBreedsForUI()
       .map(normalizeBreed);
+
 
   const search =
     String(name)
       .trim()
       .toLowerCase();
+
 
   return (
     breeds.find(
@@ -1909,6 +2470,8 @@ function findBreedByName(
           .toLowerCase() ===
         search
     ) ||
+
+
     breeds.find(
       (breed) =>
         breed.name
@@ -1918,6 +2481,8 @@ function findBreedByName(
           breed.name.toLowerCase()
         )
     ) ||
+
+
     null
   );
 }
@@ -1932,9 +2497,11 @@ function renderBreedsGrid() {
     return;
   }
 
+
   const breeds =
     getAllBreedsForUI()
       .map(normalizeBreed);
+
 
   const query =
     (
@@ -1944,16 +2511,19 @@ function renderBreedsGrid() {
       .trim()
       .toLowerCase();
 
+
   const filtered =
     breeds.filter(
       (breed) => {
         const matchesFilter =
-          activeFilter === "All" ||
+          activeFilter ===
+            "All" ||
           breed.type ===
             activeFilter ||
           breed.tags.includes(
             activeFilter
           );
+
 
         const matchesSearch =
           !query ||
@@ -1961,12 +2531,14 @@ function renderBreedsGrid() {
             .toLowerCase()
             .includes(query);
 
+
         return (
           matchesFilter &&
           matchesSearch
         );
       }
     );
+
 
   if (!filtered.length) {
     els.breedsGrid.innerHTML = `
@@ -1977,6 +2549,7 @@ function renderBreedsGrid() {
 
     return;
   }
+
 
   els.breedsGrid.innerHTML =
     filtered
@@ -2000,6 +2573,7 @@ function renderBreedsGrid() {
             >
 
             <div class="breed-tile__label">
+
               <strong>
                 ${escapeHtml(
                   breed.name
@@ -2011,12 +2585,14 @@ function renderBreedsGrid() {
                   breed.type
                 )}
               </span>
+
             </div>
 
           </button>
         `
       )
       .join("");
+
 
   els.breedsGrid
     .querySelectorAll(
@@ -2046,6 +2622,7 @@ function wireBreedsPanel() {
     );
   }
 
+
   if (els.filterPills) {
     els.filterPills.addEventListener(
       "click",
@@ -2055,11 +2632,16 @@ function wireBreedsPanel() {
             ".pill"
           );
 
-        if (!pill) return;
+
+        if (!pill) {
+          return;
+        }
+
 
         activeFilter =
           pill.dataset.filter ||
           "All";
+
 
         els.filterPills
           .querySelectorAll(
@@ -2072,68 +2654,53 @@ function wireBreedsPanel() {
             )
           );
 
+
         renderBreedsGrid();
       }
     );
   }
 
-  if (els.viewAllBreedsBtn) {
+
+  if (
+    els.viewAllBreedsBtn
+  ) {
     els.viewAllBreedsBtn.addEventListener(
       "click",
-      () => {
-        activeFilter = "All";
+      async (event) => {
+        event.preventDefault();
 
-        if (els.breedSearch) {
-          els.breedSearch.value =
-            "";
-        }
-
-        if (els.filterPills) {
-          els.filterPills
-            .querySelectorAll(
-              ".pill"
-            )
-            .forEach((pill) =>
-              pill.classList.toggle(
-                "is-active",
-                pill.dataset.filter ===
-                  "All"
-              )
-            );
-        }
-
-        renderBreedsGrid();
+        await handleSidebarViewClick(
+          "breeds"
+        );
 
         document
-          .querySelector(
-            ".breeds-card"
+          .getElementById(
+            "viewBreeds"
           )
           ?.scrollIntoView({
             behavior: "smooth",
             block: "start"
           });
-
-        showToast(
-          "Displaying all cattle & buffalo breeds."
-        );
       }
     );
   }
 
-  if (els.viewAllHistory) {
+
+  /*
+   * IMPORTANT:
+   *
+   * Dashboard View History button
+   * opens the SAME full History page.
+   */
+  if (
+    els.viewAllHistory
+  ) {
     els.viewAllHistory.addEventListener(
       "click",
-      (event) => {
+      async (event) => {
         event.preventDefault();
 
-        document
-          .querySelector(
-            ".history-card"
-          )
-          ?.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
+        await openHistoryPage();
       }
     );
   }
@@ -2147,23 +2714,36 @@ function wireBreedsPanel() {
 async function openBreedModalByName(
   name
 ) {
-  if (!name) return;
+  if (!name) {
+    return;
+  }
+
 
   let breed =
-    findBreedByName(name);
+    findBreedByName(
+      name
+    );
 
-  // Try backend if local data wasn't found
+
+  /*
+   * Try backend if local
+   * breed data wasn't found.
+   */
   if (!breed) {
     breed =
       await loadBreedByIdOrLabel(
         name
       );
 
+
     if (breed) {
       breed =
-        normalizeBreed(breed);
+        normalizeBreed(
+          breed
+        );
     }
   }
+
 
   if (!breed) {
     showToast(
@@ -2173,9 +2753,11 @@ async function openBreedModalByName(
     return;
   }
 
+
   if (!els.modalContent) {
     return;
   }
+
 
   els.modalContent.innerHTML = `
     <div class="modal-breed">
@@ -2205,10 +2787,12 @@ async function openBreedModalByName(
         }
       </p>
 
+
       <table>
 
         <tr>
           <td>Origin</td>
+
           <td>
             ${escapeHtml(
               breed.origin
@@ -2216,8 +2800,10 @@ async function openBreedModalByName(
           </td>
         </tr>
 
+
         <tr>
           <td>Breed Type</td>
+
           <td>
             ${escapeHtml(
               breed.type
@@ -2225,8 +2811,10 @@ async function openBreedModalByName(
           </td>
         </tr>
 
+
         <tr>
           <td>Body Size</td>
+
           <td>
             ${escapeHtml(
               breed.bodySize
@@ -2234,8 +2822,10 @@ async function openBreedModalByName(
           </td>
         </tr>
 
+
         <tr>
           <td>Purpose</td>
+
           <td>
             ${escapeHtml(
               breed.purpose
@@ -2243,8 +2833,10 @@ async function openBreedModalByName(
           </td>
         </tr>
 
+
         <tr>
           <td>Special Features</td>
+
           <td>
             ${escapeHtml(
               breed.specialFeatures
@@ -2253,6 +2845,7 @@ async function openBreedModalByName(
         </tr>
 
       </table>
+
 
       <ul class="trait-list">
 
@@ -2272,6 +2865,7 @@ async function openBreedModalByName(
     </div>
   `;
 
+
   if (els.modal) {
     els.modal.classList.add(
       "is-open"
@@ -2279,6 +2873,10 @@ async function openBreedModalByName(
   }
 }
 
+
+/* ============================================================
+   MODAL EVENTS
+   ============================================================ */
 
 function wireModal() {
   if (els.modalClose) {
@@ -2291,6 +2889,7 @@ function wireModal() {
       }
     );
   }
+
 
   if (els.modal) {
     els.modal.addEventListener(
@@ -2307,6 +2906,7 @@ function wireModal() {
       }
     );
   }
+
 
   document.addEventListener(
     "keydown",
@@ -2328,7 +2928,9 @@ function wireModal() {
    ============================================================ */
 
 function wireResultCtas() {
-  if (els.viewFullInfoBtn) {
+  if (
+    els.viewFullInfoBtn
+  ) {
     els.viewFullInfoBtn.addEventListener(
       "click",
       () => {
@@ -2341,7 +2943,10 @@ function wireResultCtas() {
     );
   }
 
-  if (els.viewSimilarBtn) {
+
+  if (
+    els.viewSimilarBtn
+  ) {
     els.viewSimilarBtn.addEventListener(
       "click",
       () => {
@@ -2349,25 +2954,31 @@ function wireResultCtas() {
           return;
         }
 
+
         activeFilter =
           lastPrediction.type ||
           "All";
+
 
         if (els.filterPills) {
           els.filterPills
             .querySelectorAll(
               ".pill"
             )
-            .forEach((pill) =>
-              pill.classList.toggle(
-                "is-active",
-                pill.dataset.filter ===
-                  activeFilter
-              )
+            .forEach(
+              (pill) =>
+                pill.classList.toggle(
+                  "is-active",
+                  pill.dataset
+                    .filter ===
+                    activeFilter
+                )
             );
         }
 
+
         renderBreedsGrid();
+
 
         document
           .querySelector(
@@ -2381,7 +2992,10 @@ function wireResultCtas() {
     );
   }
 
-  if (els.learnMoreBtn) {
+
+  if (
+    els.learnMoreBtn
+  ) {
     els.learnMoreBtn.addEventListener(
       "click",
       () => {
@@ -2409,50 +3023,68 @@ function wireNavigation() {
       ".nav__item"
     );
 
-  navItems.forEach((item) => {
-    item.addEventListener(
-      "click",
-      async (event) => {
-        event.preventDefault();
 
-        navItems.forEach(
-          (nav) =>
-            nav.classList.remove(
-              "is-active"
-            )
-        );
+  navItems.forEach(
+    (item) => {
+      item.addEventListener(
+        "click",
+        async (event) => {
+          event.preventDefault();
 
-        item.classList.add(
-          "is-active"
-        );
 
-        const view =
-          item.dataset.view;
+          const view =
+            item.dataset.view;
 
-        await handleSidebarViewClick(
-          view
-        );
-      }
-    );
-  });
+
+          await handleSidebarViewClick(
+            view
+          );
+        }
+      );
+    }
+  );
 }
 
+
+/* ============================================================
+   SIDEBAR VIEW HANDLER
+   ============================================================ */
 
 async function handleSidebarViewClick(
   view
 ) {
+  /*
+   * Hide all panels.
+   */
   document
     .querySelectorAll(
       ".view-panel"
     )
-    .forEach((panel) =>
+    .forEach((panel) => {
       panel.classList.add(
         "hidden"
-      )
-    );
+      );
+    });
+
+
+  /*
+   * Update active sidebar item.
+   */
+  document
+    .querySelectorAll(
+      ".nav__item"
+    )
+    .forEach((nav) => {
+      nav.classList.toggle(
+        "is-active",
+        nav.dataset.view ===
+          view
+      );
+    });
+
 
   switch (view) {
-    case "home":
+    case "home": {
       document
         .getElementById(
           "viewHome"
@@ -2460,9 +3092,24 @@ async function handleSidebarViewClick(
         ?.classList.remove(
           "hidden"
         );
-      break;
 
-    case "history":
+
+      /*
+       * Dashboard history:
+       * latest 6.
+       */
+      if (getToken()) {
+        await loadPredictionHistory(
+          false
+        );
+      }
+
+
+      break;
+    }
+
+
+    case "history": {
       document
         .getElementById(
           "viewHistory"
@@ -2471,10 +3118,31 @@ async function handleSidebarViewClick(
           "hidden"
         );
 
-      await loadPredictionHistory();
-      break;
 
-    case "breeds":
+      /*
+       * Full history:
+       * ALL records.
+       */
+      await loadPredictionHistory(
+        true
+      );
+
+
+      document
+        .getElementById(
+          "viewHistory"
+        )
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+
+      break;
+    }
+
+
+    case "breeds": {
       document
         .getElementById(
           "viewBreeds"
@@ -2483,10 +3151,15 @@ async function handleSidebarViewClick(
           "hidden"
         );
 
-      await loadBreedsFromBackend();
-      break;
 
-    case "about":
+      await loadBreedsFromBackend();
+
+
+      break;
+    }
+
+
+    case "about": {
       document
         .getElementById(
           "viewAbout"
@@ -2494,9 +3167,12 @@ async function handleSidebarViewClick(
         ?.classList.remove(
           "hidden"
         );
-      break;
 
-    case "settings":
+      break;
+    }
+
+
+    case "settings": {
       document
         .getElementById(
           "viewSettings"
@@ -2504,9 +3180,12 @@ async function handleSidebarViewClick(
         ?.classList.remove(
           "hidden"
         );
-      break;
 
-    case "help":
+      break;
+    }
+
+
+    case "help": {
       document
         .getElementById(
           "viewHelp"
@@ -2514,9 +3193,12 @@ async function handleSidebarViewClick(
         ?.classList.remove(
           "hidden"
         );
-      break;
 
-    default:
+      break;
+    }
+
+
+    default: {
       document
         .getElementById(
           "viewHome"
@@ -2524,6 +3206,7 @@ async function handleSidebarViewClick(
         ?.classList.remove(
           "hidden"
         );
+    }
   }
 }
 
@@ -2538,12 +3221,17 @@ function wireDarkMode() {
       "#darkModeToggle"
     );
 
-  if (!toggle) return;
+
+  if (!toggle) {
+    return;
+  }
+
 
   const isDark =
     localStorage.getItem(
       "theme"
     ) === "dark";
+
 
   if (isDark) {
     document.body.classList.add(
@@ -2553,10 +3241,13 @@ function wireDarkMode() {
     toggle.checked = true;
   }
 
+
   toggle.addEventListener(
     "change",
     (event) => {
-      if (event.target.checked) {
+      if (
+        event.target.checked
+      ) {
         document.body.classList.add(
           "dark-mode"
         );
@@ -2586,21 +3277,29 @@ function wireDarkMode() {
 
 function initDashboard() {
   wireNavigation();
+
   wireUploadTriggers();
+
   wireBreedsPanel();
+
   wireModal();
+
   wireResultCtas();
+
   wireDarkMode();
 
-  setResultState("empty");
+
+  setResultState(
+    "empty"
+  );
+
 
   renderBreedsGrid();
 
-  if (getToken()) {
-    loadPredictionHistory();
-  }
 
-  // Load breeds from MongoDB/API
+  /*
+   * Load breeds from MongoDB/API.
+   */
   loadBreedsFromBackend();
 }
 
@@ -2611,24 +3310,43 @@ function initDashboard() {
 
 async function init() {
   wireAuth();
+
   initDashboard();
+
 
   const token =
     getToken();
+
 
   if (token) {
     try {
       const user =
         await getProfile();
 
-      if (user) {
-        setCurrentUser(user);
-        showDashboard(user);
 
-        await loadPredictionHistory();
+      if (user) {
+        setCurrentUser(
+          user
+        );
+
+
+        showDashboard(
+          user
+        );
+
+
+        /*
+         * Dashboard:
+         * latest 6 history records.
+         */
+        await loadPredictionHistory(
+          false
+        );
+
 
         return;
       }
+
     } catch (error) {
       console.warn(
         "Session validation failed:",
@@ -2637,8 +3355,10 @@ async function init() {
     }
   }
 
+
   const existingUser =
     getCurrentUser();
+
 
   if (existingUser) {
     showDashboard(
@@ -2651,7 +3371,7 @@ async function init() {
 
 
 /* ============================================================
-   START
+   START APPLICATION
    ============================================================ */
 
 document.addEventListener(

@@ -78,11 +78,9 @@ const getMyPredictions = AsyncHandler(async (req, res) => {
     createdAt: -1,
   });
 
-  return res
-  .status(200)
-  .json(
-    new ApiResponse(200, predictions, "Success")
-  );
+  res.json({
+    predictions
+});
 });
 
 // @desc  Get a single prediction by id
