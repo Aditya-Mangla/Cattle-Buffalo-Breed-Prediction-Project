@@ -61,6 +61,8 @@ const els = {
   viewAllHistory: document.getElementById("viewAllHistory"),
 
   breedsGrid: document.getElementById("breedsGrid"),
+  allBreedsTitle: document.getElementById("allBreedsTitle"),
+  similarBreedsTitle: document.getElementById("similarBreedsTitle"),
   breedSearch: document.getElementById("breedSearch"),
   filterPills: document.getElementById("filterPills"),
   viewAllBreedsBtn: document.getElementById("viewAllBreedsBtn"),
@@ -87,6 +89,8 @@ let toastTimer = null;
 
 let backendBreeds = [];
 let historyData = [];
+let similarPredictions = [];
+let showingSimilarBreeds = false;
 
 
 /* ============================================================
@@ -716,6 +720,13 @@ function renderPrediction(
     originalResponse?.predictionId ||
     null;
 
+  merged.topPredictions = getTopPredictions(
+    apiData,
+    originalResponse
+  );
+
+  similarPredictions = merged.topPredictions;
+
 
   lastPrediction =
     merged;
@@ -815,6 +826,76 @@ function renderPrediction(
   setResultState(
     "filled"
   );
+}
+
+
+function getTopPredictions(
+  apiData = {},
+  originalResponse = null
+) {
+  const responseData =
+    apiData?.data ||
+    originalResponse?.data ||
+    originalResponse ||
+    apiData;
+
+  const rankedPredictions =
+    responseData?.topPredictions ||
+    responseData?.top_k ||
+    [];
+
+  const alternatives =
+    responseData?.alternatives ||
+    [];
+
+  const primary =
+    responseData?.predictedBreed ||
+    responseData?.breed ||
+    responseData?.label;
+
+  const primaryPrediction = primary
+    ? [{
+        breed: primary,
+        confidence:
+          responseData?.confidence ??
+          responseData?.score ??
+          responseData?.probability
+      }]
+    : [];
+
+  const predictions = [
+    ...(Array.isArray(rankedPredictions)
+      ? rankedPredictions
+      : []),
+    ...primaryPrediction,
+    ...(Array.isArray(alternatives)
+      ? alternatives
+      : [])
+  ]
+    .filter(
+      (prediction) =>
+        prediction?.breed &&
+        prediction.confidence !== undefined
+    )
+    .map((prediction) => ({
+      breed: prediction.breed,
+      confidence: prediction.confidence
+    }))
+    .filter(
+      (prediction, index, list) =>
+        list.findIndex(
+          (item) =>
+            item.breed.toLowerCase() ===
+            prediction.breed.toLowerCase()
+        ) === index
+    )
+    .sort(
+      (first, second) =>
+        Number(second.confidence) -
+        Number(first.confidence)
+    );
+
+  return predictions.slice(0, 3);
 }
 
 
@@ -2497,6 +2578,11 @@ function renderBreedsGrid() {
     return;
   }
 
+  if (showingSimilarBreeds) {
+    renderSimilarBreedsGrid();
+    return;
+  }
+
 
   const breeds =
     getAllBreedsForUI()
@@ -2610,6 +2696,75 @@ function renderBreedsGrid() {
 }
 
 
+function renderSimilarBreedsGrid() {
+  if (!els.breedsGrid) {
+    return;
+  }
+
+  const referenceBreeds = getAllBreedsForUI()
+    .map(normalizeBreed);
+
+  const tiles = similarPredictions.map(
+    (prediction) => {
+      const breed =
+        referenceBreeds.find(
+          (reference) =>
+            reference.name.toLowerCase() ===
+            prediction.breed.toLowerCase()
+        ) || normalizeBreed({
+          name: prediction.breed
+        });
+
+      return `
+        <button
+          class="breed-tile"
+          data-name="${escapeHtml(breed.name)}"
+        >
+          <img
+            src="${escapeHtml(breed.image)}"
+            alt="${escapeHtml(breed.name)}"
+            loading="lazy"
+          >
+          <div class="breed-tile__label">
+            <strong>${escapeHtml(breed.name)}</strong>
+            <span>${escapeHtml(breed.type || "Model prediction")}</span>
+            <span>${formatConfidence(prediction.confidence)}</span>
+          </div>
+        </button>
+      `;
+    }
+  );
+
+  els.breedsGrid.innerHTML = tiles.length
+    ? tiles.join("")
+    : `<div class="breed-tile-empty">No model alternatives are available.</div>`;
+
+  els.breedsGrid
+    .querySelectorAll(".breed-tile")
+    .forEach((tile) => {
+      tile.addEventListener(
+        "click",
+        () => openBreedModalByName(tile.dataset.name)
+      );
+    });
+}
+
+
+function showAllBreeds() {
+  showingSimilarBreeds = false;
+
+  if (els.allBreedsTitle) {
+    els.allBreedsTitle.classList.remove("hidden");
+  }
+
+  if (els.similarBreedsTitle) {
+    els.similarBreedsTitle.classList.add("hidden");
+  }
+
+  renderBreedsGrid();
+}
+
+
 /* ============================================================
    BREEDS PANEL
    ============================================================ */
@@ -2672,6 +2827,8 @@ function wireBreedsPanel() {
         await handleSidebarViewClick(
           "breeds"
         );
+
+        showAllBreeds();
 
         document
           .getElementById(
@@ -2950,34 +3107,30 @@ function wireResultCtas() {
     els.viewSimilarBtn.addEventListener(
       "click",
       () => {
-        if (!lastPrediction) {
+        if (
+          !lastPrediction ||
+          !similarPredictions.length
+        ) {
+          showToast(
+            "Top predictions are not available yet."
+          );
+
           return;
         }
 
+        showingSimilarBreeds = true;
 
-        activeFilter =
-          lastPrediction.type ||
-          "All";
-
-
-        if (els.filterPills) {
-          els.filterPills
-            .querySelectorAll(
-              ".pill"
-            )
-            .forEach(
-              (pill) =>
-                pill.classList.toggle(
-                  "is-active",
-                  pill.dataset
-                    .filter ===
-                    activeFilter
-                )
-            );
+        if (els.allBreedsTitle) {
+          els.allBreedsTitle.classList.add("hidden");
         }
 
+        if (els.similarBreedsTitle) {
+          els.similarBreedsTitle.classList.remove("hidden");
+        }
 
-        renderBreedsGrid();
+        handleSidebarViewClick("breeds").then(
+          renderSimilarBreedsGrid
+        );
 
 
         document
